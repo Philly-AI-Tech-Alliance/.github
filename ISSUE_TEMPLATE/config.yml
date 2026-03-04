@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/orgs/Philly-AI-Tech-Alliance/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: Contributing Guide
+    url: https://github.com/Philly-AI-Tech-Alliance/.github/blob/main/CONTRIBUTING.md
+    about: Learn how to contribute to our projects
+  - name: Code of Conduct
+    url: https://github.com/Philly-AI-Tech-Alliance/.github/blob/main/CODE_OF_CONDUCT.md
+    about: Review our community guidelines and standards

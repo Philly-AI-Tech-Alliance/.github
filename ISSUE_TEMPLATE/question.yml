@@ -1,0 +1,68 @@
+name: Question
+description: Ask a question about the project
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help! Please provide as much context as possible.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: Ask your question here in detail
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Getting Started
+        - Installation/Setup
+        - Usage/How-to
+        - Best Practices
+        - Architecture/Design
+        - Contributing
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context or background
+      placeholder: |
+        - What are you trying to accomplish?
+        - What have you already tried?
+        - Links to relevant documentation you've read
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: If your question is environment-specific, please provide details
+      placeholder: |
+        - OS: [e.g. Windows 11, macOS 14, Ubuntu 22.04]
+        - Version: [e.g. 1.2.3]
+        - Python/Node version: [e.g. Python 3.11, Node 20]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify the following before submitting
+      options:
+        - label: I have searched existing issues and discussions for similar questions
+          required: true
+        - label: I have checked the documentation and README
+          required: true
+        - label: I have provided sufficient context for others to understand my question
+          required: true

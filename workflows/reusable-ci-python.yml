@@ -1,0 +1,99 @@
+name: Reusable Python CI
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: 'Python version to use'
+        required: false
+        type: string
+        default: '3.11'
+      working-directory:
+        description: 'Working directory for the project'
+        required: false
+        type: string
+        default: '.'
+      install-command:
+        description: 'Command to install dependencies'
+        required: false
+        type: string
+        default: 'pip install -r requirements.txt'
+      test-command:
+        description: 'Command to run tests'
+        required: false
+        type: string
+        default: 'pytest'
+      lint-tool:
+        description: 'Linting tool to use (ruff, flake8, or both)'
+        required: false
+        type: string
+        default: 'ruff'
+
+jobs:
+  lint:
+    name: Lint Python Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: 'pip'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ inputs.lint-tool }}" = "ruff" ] || [ "${{ inputs.lint-tool }}" = "both" ]; then
+            pip install ruff
+          fi
+          if [ "${{ inputs.lint-tool }}" = "flake8" ] || [ "${{ inputs.lint-tool }}" = "both" ]; then
+            pip install flake8
+          fi
+
+      - name: Run Ruff
+        if: inputs.lint-tool == 'ruff' || inputs.lint-tool == 'both'
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ruff check .
+
+      - name: Run Flake8
+        if: inputs.lint-tool == 'flake8' || inputs.lint-tool == 'both'
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          python -m pip install --upgrade pip
+          ${{ inputs.install-command }}
+
+      - name: Run tests
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.test-command }}
+
+      - name: Upload coverage reports
+        if: hashFiles('coverage.xml') != ''
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella

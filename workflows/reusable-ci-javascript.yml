@@ -1,0 +1,120 @@
+name: Reusable JavaScript CI
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '20'
+      working-directory:
+        description: 'Working directory for the project'
+        required: false
+        type: string
+        default: '.'
+      package-manager:
+        description: 'Package manager to use (npm, yarn, or pnpm)'
+        required: false
+        type: string
+        default: 'npm'
+      install-command:
+        description: 'Command to install dependencies (overrides package-manager)'
+        required: false
+        type: string
+        default: ''
+      test-command:
+        description: 'Command to run tests'
+        required: false
+        type: string
+        default: 'npm test'
+      lint-command:
+        description: 'Command to run linting'
+        required: false
+        type: string
+        default: 'npm run lint'
+
+jobs:
+  lint:
+    name: Lint JavaScript Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+
+      - name: Install dependencies (custom command)
+        if: inputs.install-command != ''
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.install-command }}
+
+      - name: Install dependencies (npm)
+        if: inputs.install-command == '' && inputs.package-manager == 'npm'
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci
+
+      - name: Install dependencies (yarn)
+        if: inputs.install-command == '' && inputs.package-manager == 'yarn'
+        working-directory: ${{ inputs.working-directory }}
+        run: yarn install --frozen-lockfile
+
+      - name: Install dependencies (pnpm)
+        if: inputs.install-command == '' && inputs.package-manager == 'pnpm'
+        working-directory: ${{ inputs.working-directory }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linter
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.lint-command }}
+        continue-on-error: false
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+
+      - name: Install dependencies (custom command)
+        if: inputs.install-command != ''
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.install-command }}
+
+      - name: Install dependencies (npm)
+        if: inputs.install-command == '' && inputs.package-manager == 'npm'
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci
+
+      - name: Install dependencies (yarn)
+        if: inputs.install-command == '' && inputs.package-manager == 'yarn'
+        working-directory: ${{ inputs.working-directory }}
+        run: yarn install --frozen-lockfile
+
+      - name: Install dependencies (pnpm)
+        if: inputs.install-command == '' && inputs.package-manager == 'pnpm'
+        working-directory: ${{ inputs.working-directory }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.test-command }}
+
+      - name: Upload coverage reports
+        if: hashFiles('coverage/lcov.info') != ''
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
