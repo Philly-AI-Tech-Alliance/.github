@@ -1,4 +1,4 @@
-# ☕ Coffee Code Philly Accelerator
+
 
 **Building Philadelphia's tech community, one commit at a time.**
 
