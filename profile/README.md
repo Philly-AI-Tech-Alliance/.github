@@ -2,8 +2,6 @@
 
 **Building Philadelphia's tech community, one commit at a time.**
 
-Welcome to the Coffee Code Philly Accelerator GitHub organization! We're a vibrant community of developers, designers, entrepreneurs, and tech enthusiasts working together to build innovative projects, learn new skills, and strengthen Philadelphia's tech ecosystem.
-
 ---
 
 ## 🚀 What We Do
